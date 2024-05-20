@@ -10,6 +10,14 @@ class ApiErorr extends Error {
     }
 
     static badRequest(message) {
+        return new ApiErorr(400, message)
+    }
+
+    static notAuthorized() {
+        return new ApiErorr(401, 'notAuthorized')
+    }
+
+    static notFound(message) {
         return new ApiErorr(404, message)
     }
 

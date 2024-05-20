@@ -4,6 +4,8 @@ const path = require('path');
 const ApiErorr = require("../errors/ApiError");
 
 class DeviceController {
+    #todo
+    #Services
     async getAll(req, res) {
         let {brandId, typeId, limit, page} = req.query
 
@@ -79,7 +81,7 @@ class DeviceController {
             return res.json(device)
         } catch (error) {
             console.log(error)
-            next(ApiErorr.badRequest(error.message))
+            return next(ApiErorr.badRequest(error.message))
         }
         
     }
