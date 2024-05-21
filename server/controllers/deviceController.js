@@ -2,6 +2,7 @@ const { Device, DeviceInfo } = require("../models/models");
 const uuid = require('uuid')
 const path = require('path');
 const ApiErorr = require("../errors/ApiError");
+const { LIMIT_API_RESULTS } = require("../settings");
 
 class DeviceController {
     #todo
@@ -10,8 +11,8 @@ class DeviceController {
         let {brandId, typeId, limit, page} = req.query
 
         page = page || 1
-        limit = limit || 9
-        let offset = page * limit - limit
+        limit = limit || LIMIT_API_RESULTS
+        const offset = page * limit - limit
 
         let devices
         if (!brandId && !typeId) {
