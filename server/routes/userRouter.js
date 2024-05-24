@@ -6,7 +6,7 @@ const constants = require("../utils/constants");
 
 const router = new Router()
 
-router.get('/', [authMiddleware, roleMiddleware([constants.ROLE_SUPER_ADMIN, constants.ROLE_ADMIN])], getAll)
+router.get('/', [authMiddleware], getAll)
 
 
 module.exports = router;

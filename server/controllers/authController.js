@@ -1,47 +1,63 @@
-const bcrypt = require('bcrypt')
-const ApiErorr = require("../errors/ApiError");
-const { User, Basket, Role } = require("../models/models");
-const generateJwt = require('../utils/generateJwt');
-const constants = require('../utils/constants');
+const AuthService = require('../services/AuthService');
 
 
 class AuthController {
     async registration(req, res, next) {
-        const {email, password, role} = req.body
-        if (!email || !password) {
-            return next(ApiErorr.badRequest(`No email or password`))
+        try {
+            const {email, password} = req.body
+            const userData = await AuthService.registration(email, password)
+            res.cookie("refreshToken", userData.refreshToken, {maxAge: 30 * 24* 60 * 60 * 1000, httpOnly: true})
+            return res.json(userData)  
+        } catch (error) {
+            next(error)
         }
-        const candidate = await User.findOne({where : {email}})
-        if (candidate) {
-            return next(ApiErorr.badRequest(`User with email ${email} exists`))
-        }
-        const hashPassword = await bcrypt.hash(password, 5)
-        const user = await User.create({email, role, password: hashPassword})
-        const userRole = await Role.findOne({ where: { name: constants.ROLE_CUSTOMER } })
-        user.addRole(userRole)
-        const basket = await Basket.create({userId: user.id})
-        const token = generateJwt(user.id, email, [userRole.dataValues])
-        return res.json({token})  
+        
     }
 
     async login(req, res, next) {
-        const {email, password} = req.body
-        const user = await User.findOne({where: {email}, include: [{model: Role, as: 'roles'}]})
-        if (!user) {
-            return next(ApiErorr.notFound(`User with email ${email} not found`))
+        try {
+            const {email, password} = req.body
+            const userData = await AuthService.login(email, password)
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: 30 * 24 * 60 * 60 * 1000, 
+                httpOnly: true,
+                sameSite: 'strict', 
+                secure: true
+            })
+            return res.json(userData)
+        } catch (error) {
+            next(error)
         }
-        let comparePassword = bcrypt.compareSync(password, user.password)
-        if (!comparePassword) {
-            return next(ApiErorr.badRequest(`Wrong password`))
-        }
-        console.log(user)
-        const token = generateJwt(user.id, email, user.roles)
-        return res.json(token)
     }
 
-    async check(req, res, next) {
-        const token = generateJwt(req.user.id, req.user.email, req.user.role)
-        return res.json({token})
+
+    async logout(req, res, next){
+        try {
+            const {refreshToken} = req.cookies;
+            const token = await AuthService.logout(refreshToken);
+            res.clearCookie('refreshToken');
+            await AuthService.logout(refreshToken)
+            res.json(200)
+        } catch (error) {
+            next(error)
+        }
+
+    }
+
+    async refresh(req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+            const userData = await AuthService.refresh(refreshToken);
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: 30 * 24 * 60 * 60 * 1000, 
+                httpOnly: true,
+                sameSite: 'strict', 
+                secure: true
+            })
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
     }
 }
 

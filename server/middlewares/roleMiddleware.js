@@ -1,4 +1,4 @@
-const ApiErorr = require("../errors/ApiError");
+const ApiError = require("../errors/ApiError");
 
 module.exports = function (roles) {
     return function (req, res, next) {
@@ -11,7 +11,7 @@ module.exports = function (roles) {
             }
         })
         if (!hasRole) {
-            return next(ApiErorr.forbidden())
+            return next(ApiError.forbidden())
         } 
         
         next();

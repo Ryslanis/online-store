@@ -1,7 +1,7 @@
 const { Device, DeviceInfo } = require("../models/models");
 const uuid = require('uuid')
 const path = require('path');
-const ApiErorr = require("../errors/ApiError");
+const ApiError = require("../errors/ApiError");
 const { LIMIT_API_RESULTS } = require("../settings");
 
 class DeviceController {
@@ -82,7 +82,7 @@ class DeviceController {
             return res.json(device)
         } catch (error) {
             console.log(error)
-            return next(ApiErorr.badRequest(error.message))
+            return next(ApiError.badRequest(error.message))
         }
         
     }

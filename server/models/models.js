@@ -4,7 +4,7 @@ const sequelize = require('../db')
 
 const User = sequelize.define('user', {
     email: {type: DataTypes.STRING, unique:true},
-    password: {type: DataTypes.STRING}
+    password: {type: DataTypes.STRING},
 })
 
 const UserRole = sequelize.define('user_role', {
@@ -66,6 +66,10 @@ const TypeBrand = sequelize.define('type_brand', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
 })
 
+const Token = sequelize.define('token', {
+    refreshToken: {type: DataTypes.STRING(350), allowNull: false}
+})
+
 
 User.belongsToMany(Role,{through: UserRole})
 Role.belongsToMany(User, {through: UserRole})
@@ -97,6 +101,9 @@ Device.belongsTo(Brand)
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
 
+User.hasOne(Token)
+Token.belongsTo(User)
+
 module.exports = {
     User,
     UserRole,
@@ -108,6 +115,7 @@ module.exports = {
     Brand,
     Rating,
     TypeBrand,
-    DeviceInfo
+    DeviceInfo,
+    Token
 }
 
