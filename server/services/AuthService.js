@@ -20,7 +20,7 @@ class AuthService {
         let user = await User.create({email, password: hashPassword, activationLink})
         const userRole = await Role.findOne({ where: { name: constants.ROLE_CUSTOMER } })
         await user.addRole(userRole)
-        user = await User.findOne({where: {email}, include: [{model: Role, as: 'roles'}]})
+        user = await User.scope('rolesInclude').findOne({where: {email}})
 
         await Basket.create({userId: user.id})
 

@@ -1,21 +1,24 @@
+const UserDto = require("../dtos/UserDto");
 const { User, Role } = require("../models/models")
-const { LIMIT_API_RESULTS } = require("../settings")
+const { LIMIT_API_RESULTS } = require("../settings");
+const getPaginationParams = require("../utils/getPaginationParams");
 
 class UserController {
     async getAll(req, res) {
         let {limit, page} = req.query
 
-        page = page || 1
-        limit = limit || LIMIT_API_RESULTS
-
-        const offset = page * limit - limit
+        const limitOffset = getPaginationParams(page, limit)
 
         let users;
+        
+        const data = await User.scope('rolesInclude').findAndCountAll(limitOffset)
+        users = data.rows.map(user => new UserDto(user));
 
-        users = await User.findAndCountAll({limit, offset, include: [{model: Role, as: 'roles'}]})
-
-        return res.json(users)
-    }
+        return res.json({
+            count: data.count,
+            users
+        })
+    }   
 }
 
 module.exports = new UserController()

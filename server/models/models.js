@@ -12,7 +12,7 @@ const UserRole = sequelize.define('user_role', {
     roleId: {type: DataTypes.INTEGER, allowNull: false, defaultValue: 1},
 }, 
 {
-    timestamps: false
+    timestamps: false,
 })
 
 const Role = sequelize.define('role', {
@@ -103,6 +103,18 @@ Brand.belongsToMany(Type, {through: TypeBrand})
 
 User.hasOne(Token)
 Token.belongsTo(User)
+
+
+User.addScope('rolesInclude', {
+    include: {
+      model: Role,
+      through: {
+        attributes: []
+      },
+    }
+  });
+
+
 
 module.exports = {
     User,
