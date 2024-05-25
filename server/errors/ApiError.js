@@ -1,29 +1,34 @@
-class ApiErorr extends Error {
+class ApiError extends Error {
     constructor(status, message) {
         super();
         this.status = status
         this.message = message
     }
 
-    static internal(message) {
-        return new ApiErorr(500, message)
-    }
-
+    //400
     static badRequest(message) {
-        return new ApiErorr(400, message)
+        return new ApiError(400, message)
     }
 
-    static notAuthorized() {
-        return new ApiErorr(401, 'notAuthorized')
-    }
-
-    static notFound(message) {
-        return new ApiErorr(404, message)
+    static  notAuthorized(message) {
+        message = message || "Not authorized"
+        return new ApiError(401, message)
     }
 
     static forbidden(message) {
-        return new ApiErorr(403, message)
+        message = message || "Don't have access"
+        return new ApiError(403, message)
+    }
+
+    static notFound(message) {
+        message = message || "Not found"
+        return new ApiError(404, message)
+    }
+    //500
+    static internal(message) {
+        message = message || "Server  error"
+        return new ApiError(500, message)
     }
 }
 
-module.exports = ApiErorr
+module.exports = ApiError

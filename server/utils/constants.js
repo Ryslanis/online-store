@@ -1,0 +1,10 @@
+module.exports = {
+    //Roles
+    ROLE_SUPER_ADMIN: 'SUPER_ADMIN',
+    ROLE_ADMIN: 'ADMIN',
+    ROLE_MODERATOR: 'MODERATOR',
+    ROLE_MANAGER: 'MANAGER',
+    ROLE_CUSTOMER: 'CUSTOMER',
+    //Queries
+    DEFAULT_API_LIMIT_RESULTS: 10
+}

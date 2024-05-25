@@ -1,19 +1,24 @@
 const jwt = require('jsonwebtoken')
-const ApiErorr = require("../errors/ApiError")
+const ApiError = require("../errors/ApiError")
+const TokenService = require('../services/TokenService')
 
 module.exports = function(req, res, next) {
     if (req.method === "OPTIONS") {
         next()
     }
     try {
-        const token = req.headers.authorization?.split(' ')[1]
-        if (!token) {
-            return next(ApiErorr.notAuthorized())
+        const accessToken = req.headers.authorization?.split(' ')[1]
+        if (!accessToken) {
+            return next(ApiError.notAuthorized())
         }
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        req.user = decodedToken
+
+        const userData = TokenService.validateAccessToken(accessToken);
+        if (!userData) {
+            return next(ApiError.notAuthorized());
+        }
+        req.user = userData;
         next()
     } catch (error) {
-        return next(ApiErorr.notAuthorized())
+        return next(ApiError.notAuthorized())
     }
 }
