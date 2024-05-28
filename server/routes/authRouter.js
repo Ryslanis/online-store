@@ -7,7 +7,7 @@ const credentialsMiddleware = require("../middlewares/credentialsMiddleware");
 const router = new Router()
 
 router.post('/registration', [credentialsMiddleware], registration)
-router.post('/login', login)
+router.post('/login', [credentialsMiddleware], login)
 router.post('/logout', logout)
 router.get('/refresh', [authMiddleware], refresh)
 

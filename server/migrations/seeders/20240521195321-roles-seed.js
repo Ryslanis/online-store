@@ -15,9 +15,9 @@ module.exports = {
 
     ]);
 
-    const hashPassword = await bcrypt.hash('test', 5)
+    const hashPassword = await bcrypt.hash('12345!Qwerty', 5)
     const superAdminUser = await User.create({
-      email: 'test',
+      email: 'test@gmail.com',
       password: hashPassword,
     });
 

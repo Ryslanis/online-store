@@ -1,6 +1,6 @@
 const ApiError = require("../errors/ApiError");
 
-module.exports = function (...roles) {
+module.exports = function (roles) {
 
     return function (req, res, next) {
         let hasRole = false;

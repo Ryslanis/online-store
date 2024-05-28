@@ -1,88 +1,40 @@
 const { Device, DeviceInfo } = require("../models/models");
-const uuid = require('uuid')
-const path = require('path');
 const ApiError = require("../errors/ApiError");
-const { LIMIT_API_RESULTS } = require("../settings");
+const getPaginationParams = require("../utils/getPaginationParams");
+const DeviceService = require("../services/DeviceService");
 
 class DeviceController {
-    #todo
-    #Services
-    async getAll(req, res) {
-        let {brandId, typeId, limit, page} = req.query
-
-        page = page || 1
-        limit = limit || LIMIT_API_RESULTS
-        const offset = page * limit - limit
-
-        let devices
-        if (!brandId && !typeId) {
-            devices = await Device.findAndCountAll(limit, offset)
+    async getAll(req, res, next) {
+        try {
+            let {brandId, typeId, limit, page} = req.query
+            const devices = await DeviceService.getAll(brandId, typeId, limit, page)
+            return res.json(devices)
+        } catch (error) {
+            next(error)
         }
-
-        if (brandId && !typeId) {
-            devices = await Device.findAndCountAll(
-                {
-                    where: {brandId}, limit, offset
-                }
-            )
-        }
-
-        if (!brandId && typeId) {
-            devices = await Device.findAndCountAll(
-                {
-                    where: {typeId}, limit, offset
-                }
-            )
-        }
-
-        if (brandId && typeId) {
-            devices = await Device.findAndCountAll(
-                {
-                    where: {brandId, typeId}, limit, offset
-                }
-            )
-        }
-
-        return res.json(devices)
+       
     }
 
-    async getOne(req, res) {
-        const {id} = req.params
-        const device = await Device.findOne(
-            {
-                where: {id},
-                include: [{model: DeviceInfo, as: 'info'}]
-            }
-        )
-        return res.json(device)
+    async getOne(req, res, next) {
+        try {
+            const {id} = req.params
+            const device = await DeviceService.getOne(id)
+            return res.json(device)
+        } catch (error) {
+            next(error)
+        }
     }
 
     async create(req, res, next) {
         try {
             const {name, price, brandId, typeId, info} = req.body
+            console.log(req.files)
             const {img} = req.files
-            let filename = uuid.v4() + '.jpg'
-            
-            const device = await Device.create({name, price, brandId, typeId, img: filename})
-            
-            img.mv(path.resolve(__dirname, '..', 'static', filename))
-            
-            if (info) {
-                info = JSON.parse(info)
-                info.forEach(i => {
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
-                        deviceId: device.id
-                    })
-                    
-                });
-            }
-
+            const device = await DeviceService.create(name, price, brandId, typeId, info, img)
             return res.json(device)
         } catch (error) {
-            console.log(error)
-            return next(ApiError.badRequest(error.message))
+            console.log(error.name)
+            return next(error)
         }
         
     }

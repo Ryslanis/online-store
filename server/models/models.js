@@ -38,7 +38,7 @@ const Device = sequelize.define('device', {
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
     price: {type: DataTypes.INTEGER, allowNull: false},
     rating: {type: DataTypes.INTEGER, defaultValue: 0},
-    img: {type: DataTypes.STRING, allowNull: false},
+    img: {type: DataTypes.STRING},
 })
 
 const Type = sequelize.define('type', {
@@ -95,8 +95,8 @@ BasketDevice.belongsTo(Device)
 Type.hasMany(Device)
 Device.belongsTo(Type)
 
-Brand.hasMany(Device)
-Device.belongsTo(Brand)
+Brand.hasMany(Device, {foreignKey: {name: 'brandId', allowNull: false}})
+Device.belongsTo(Brand, {foreignKey: {name: 'brandId', allowNull: false}})
 
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
@@ -113,6 +113,13 @@ User.addScope('rolesInclude', {
       },
     }
   });
+
+Device.addScope('infoInclude', {
+include: {
+    model: DeviceInfo,
+    as: 'info'
+}
+});
 
 
 
