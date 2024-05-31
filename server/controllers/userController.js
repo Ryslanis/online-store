@@ -1,6 +1,5 @@
 const UserDto = require("../dtos/UserDto");
 const { User, Role } = require("../models/models")
-const { LIMIT_API_RESULTS } = require("../settings");
 const getPaginationParams = require("../utils/getPaginationParams");
 
 class UserController {

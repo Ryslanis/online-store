@@ -7,7 +7,11 @@ module.exports = function(err, req, res, next) {
 
     if (err.name === 'SequelizeUniqueConstraintError') {
         const field = err.errors[0].path;
-        return res.status(400).json({ error: {field, message: 'Unique constraint violation: this value must be unique.'} });
+        return res.status(400).json({ error: {message: 'Unique constraint violation: this value must be unique.'} });
+    }
+
+    if (err.name === "SequelizeForeignKeyConstraintError") {
+        return res.status(400).json({ error: {message: 'Foreign key constraint violation'} });
     }
 
     console.log(err)

@@ -4,19 +4,17 @@ const uuid = require('uuid')
 const bcrypt = require('bcrypt')
 const TokenService = require("./TokenService")
 const UserDto = require("../dtos/UserDto")
-const constants = require("../utils/constants")
+const constants = require("../constants/roles")
 
 class AuthService {
     async registration(email, password) {
-        if (!email || !password) {
-            throw ApiError.badRequest(`No email or password`)
-        }
         const candidate = await User.findOne({where : {email}})
         if (candidate) {
             throw ApiError.badRequest(`User with email ${email} exists`)
         }
         const hashPassword = await bcrypt.hash(password, 5)
         const activationLink = uuid.v4()
+        email = email.toLowerCase()
         let user = await User.create({email, password: hashPassword, activationLink})
         const userRole = await Role.findOne({ where: { name: constants.ROLE_CUSTOMER } })
         await user.addRole(userRole)
@@ -33,7 +31,7 @@ class AuthService {
     }
 
     async login(email, password) {
-        const user = await User.findOne({where: {email}, include: [{model: Role, as: 'roles'}]})
+        const user = await User.scope("rolesInclude").findOne({where: {email}})
         if (!user) {
             throw ApiError.notFound(`User with email ${email} not found`)
         }

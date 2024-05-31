@@ -28,12 +28,10 @@ class DeviceController {
     async create(req, res, next) {
         try {
             const {name, price, brandId, typeId, info} = req.body
-            console.log(req.files)
             const {img} = req.files
             const device = await DeviceService.create(name, price, brandId, typeId, info, img)
             return res.json(device)
         } catch (error) {
-            console.log(error.name)
             return next(error)
         }
         

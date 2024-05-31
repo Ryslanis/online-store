@@ -1,4 +1,4 @@
-const { DEFAULT_API_LIMIT_RESULTS } = require("./constants");
+const { DEFAULT_API_LIMIT_RESULTS } = require("../constants/constrains");
 
 module.exports = function getPaginationParams(page, limit) {
     page = Number(page) || 1;

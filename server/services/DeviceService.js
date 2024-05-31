@@ -44,6 +44,8 @@ class DeviceService {
         let whereClause = {}
         if (brandId) whereClause.brandId = brandId
         if (typeId) whereClause.typeId = typeId
+        
+        console.log(whereClause)
 
         const devices = await Device.scope('infoInclude').findAndCountAll({
             where: whereClause,
